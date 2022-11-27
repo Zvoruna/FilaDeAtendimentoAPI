@@ -20,23 +20,17 @@ class Cliente(BaseModel):
     # O campo tipo de atendimento só aceita 1 caractere (N ou P);
 
 
-lista_clientes = [
-    Cliente(posicaoFila=1, nome="Mel", dataChegada="2022-11-27 00:10", id=1, tipoAtendimento="P"),
-    Cliente(posicaoFila=2, nome="Mel2", dataChegada="2022-11-27 00:11", id=2, tipoAtendimento="N"),
-    Cliente(posicaoFila=3, nome="Mel3", dataChegada="2022-11-27 00:12", id=3, tipoAtendimento="N")
-]
+
+class ListaCliente(BaseModel):
+    __root__: List[Cliente]
 
 
-# class ListaCliente(BaseModel):
-#    __root__: List[Cliente]
-
-
-# ListaCliente.parse_obj([
-#    {'posicaoFila': '1', 'nome': "Melissa", 'dataChegada': '2022-11-27 00:10', 'id': 1, 'tipoAtendimento': 'P'},
-#    {'posicaoFila': '2', 'nome': "Eli", 'dataChegada': '2022-11-27 00:11', 'id': 2, 'tipoAtendimento': 'N'},
-#    {'posicaoFila': '3', 'nome': "João", 'dataChegada': '2022-11-27 00:12', 'id': 3, 'tipoAtendimento': 'N'},
-#    {'posicaoFila': '4', 'nome': "Joana", 'dataChegada': '2022-11-27 00:13', 'id': 4, 'tipoAtendimento': 'P'},
-# ])
+ListaCliente.parse_obj([
+    {'posicaoFila': '1', 'nome': "Melissa", 'dataChegada': '2022-11-27 00:10', 'id': 1, 'tipoAtendimento': 'P'},
+    {'posicaoFila': '2', 'nome': "Eli", 'dataChegada': '2022-11-27 00:11', 'id': 2, 'tipoAtendimento': 'N'},
+   {'posicaoFila': '3', 'nome': "João", 'dataChegada': '2022-11-27 00:12', 'id': 3, 'tipoAtendimento': 'N'},
+   {'posicaoFila': '4', 'nome': "Joana", 'dataChegada': '2022-11-27 00:13', 'id': 4, 'tipoAtendimento': 'P'},
+ ])
 
 
 # https://pydantic-docs.helpmanual.io/usage/models/#parsing-data-into-a-specified-type

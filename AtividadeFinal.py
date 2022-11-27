@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Response
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List
 from datetime import datetime
@@ -10,7 +10,7 @@ my_api = FastAPI()
 # https://fastapi.tiangolo.com/pt/tutorial/body/
 class Cliente(BaseModel):
     posicaoFila: int
-    nome: str = Field(..., max_length=20)
+    nome: str = Field(None, max_length=20)
     # O campo nome é obrigatório e deve ter no máximo 20 caracteres;
     # Field https://pydantic-docs.helpmanual.io/usage/schema/#field-customization
     dataChegada: datetime = None
@@ -23,27 +23,24 @@ class Cliente(BaseModel):
     def __getitem__(self, key):
         return getattr(self, key)
 
-
+# https://field-idempotency--pydantic-docs.netlify.app/usage/types/#unions
 lista_clientes = [
-    Cliente(posicaoFila=1, nome="Mel", dataChegada="2022-11-27 00:10", id=1, tipoAtendimento="P"),
-    Cliente(posicaoFila=2, nome="Mel2", dataChegada="2022-11-27 00:11", id=2, tipoAtendimento="N"),
-    Cliente(posicaoFila=3, nome="Mel3", dataChegada="2022-11-27 00:12", id=3, tipoAtendimento="N")
+    Cliente(posicaoFila=1, nome="Melissa", dataChegada="2022-11-27 00:10", id=1, tipoAtendimento="P"),
+    Cliente(posicaoFila=2, nome="Eli", dataChegada="2022-11-27 00:11", id=2, tipoAtendimento="N"),
+    Cliente(posicaoFila=3, nome="João", dataChegada="2022-11-27 00:12", id=3, tipoAtendimento="N"),
+    Cliente(posicaoFila=4, nome="Joana", dataChegada="2022-11-27 00:13", id=4, tipoAtendimento="P")
 ]
 
-
-# class ListaCliente(BaseModel):
-#    __root__: List[Cliente]
-
-
-# ListaCliente.parse_obj([
-#    {'posicaoFila': '1', 'nome': "Melissa", 'dataChegada': '2022-11-27 00:10', 'id': 1, 'tipoAtendimento': 'P'},
-#    {'posicaoFila': '2', 'nome': "Eli", 'dataChegada': '2022-11-27 00:11', 'id': 2, 'tipoAtendimento': 'N'},
-#    {'posicaoFila': '3', 'nome': "João", 'dataChegada': '2022-11-27 00:12', 'id': 3, 'tipoAtendimento': 'N'},
-#    {'posicaoFila': '4', 'nome': "Joana", 'dataChegada': '2022-11-27 00:13', 'id': 4, 'tipoAtendimento': 'P'},
-# ])
-
-
-# https://pydantic-docs.helpmanual.io/usage/models/#parsing-data-into-a-specified-type
+# Modelo Anterior
+#  class ListaCliente(BaseModel):
+#     __root__: List[Cliente]
+#  ListaCliente.parse_obj([
+#     {'posicaoFila': '1', 'nome': "Melissa", 'dataChegada': '2022-11-27 00:10', 'id': 1, 'tipoAtendimento': 'P'},
+#     {'posicaoFila': '2', 'nome': "Eli", 'dataChegada': '2022-11-27 00:11', 'id': 2, 'tipoAtendimento': 'N'},
+#     {'posicaoFila': '3', 'nome': "João", 'dataChegada': '2022-11-27 00:12', 'id': 3, 'tipoAtendimento': 'N'},
+#     {'posicaoFila': '4', 'nome': "Joana", 'dataChegada': '2022-11-27 00:13', 'id': 4, 'tipoAtendimento': 'P'},
+#  ])
+#  https://pydantic-docs.helpmanual.io/usage/models/#parsing-data-into-a-specified-type
 
 
 # 1.Crie o endpoint GET /fila
@@ -55,9 +52,9 @@ async def get_cliente():
             clientes.append(Cliente)
     if len(clientes) == 0:
         # ou length_hint()
-        return {"Lista de fila: ": "Não há Clientes"}
-    # raise HTTPException(status_code=200, detail="Não há clientes na fila")
-    # https://fastapi.tiangolo.com/tutorial/handling-errors/
+        raise HTTPException(status_code=200, detail="Não há clientes na fila")
+        # return {"Lista de fila: ": "Não há Clientes"}
+        # https://fastapi.tiangolo.com/tutorial/handling-errors/
     else:
         return {"Lista de fila: ": clientes}
         # Exibir a posição na fila, o nome e a data de chegada de cada cliente não atendido que está na fila.
@@ -72,7 +69,7 @@ async def get_cliente_id(id: int):
             clientes.append(Cliente)
 
     if len(clientes) > 0:
-        return {"Lista de fila: \n": clientes}
+        return {"Lista de fila: ": clientes}
     # Retornar os dados do cliente (posição na fila, o nome e a data de chegada) na posição (id) da fila.
     else:
         raise HTTPException(status_code=404, detail="Não há uma pessoa na posição especificada")
@@ -116,6 +113,7 @@ async def atualizar_cliente():
         else:
             Cliente.posicaoFila -= 1
             # Será atualizada a posição de cada pessoa que está na fila (-1);
+            Cliente.id -= 1
     return {"Lista de clientes atualizada"}
 
 

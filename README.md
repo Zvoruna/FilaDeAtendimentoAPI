@@ -1,2 +1,2 @@
-# FilaDeAtendimentoAPI
-Atividade de avaliação final de Desenvolvimento de APIs e Microsserviços.
+# Avaliação: Desenvolvimento de APIs e Microsserviços
+API para fila de atendimento presencial em Python, com framework FastAPI.
